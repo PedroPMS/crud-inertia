@@ -1,8 +1,11 @@
 <script setup>
-import Layout from "@/Layouts/Layout.vue";
 import {Head, Link, useForm} from '@inertiajs/inertia-vue3'
-import {Inertia} from '@inertiajs/inertia'
+import {Inertia} from "@inertiajs/inertia";
+import {useToast} from "vue-toastification";
+import {ref, watch, onMounted, computed} from 'vue'
+
 import BreezeButton from '@/Components/PrimaryButton.vue'
+import Layout from "@/Layouts/Layout.vue";
 
 const props = defineProps({
     todos: {
@@ -13,15 +16,31 @@ const props = defineProps({
 
 function destroy(id) {
     const form = useForm();
-    if (confirm('Are you realy sure you want to DELETE')) {
-        form.delete(route('blogs.destroy', id))
-    }
+    form.delete(route('todos.destroy', id))
+    // if (confirm('Are you realy sure you want to DELETE')) {
+    //     form.delete(route('todos.destroy', id))
+    // }
 }
 
 function done(todo) {
-    const form = useForm({ is_done: !todo.is_done });
+    const form = useForm({is_done: !todo.is_done});
     form.put(route('todos.update', todo.id))
 }
+
+function showToast() {
+    const message = Inertia.page.props.flash.message;
+    if (!message) {
+        return;
+    }
+
+    const toast = useToast();
+    toast.success(message);
+}
+
+watch(() => props.todos, () => {
+    showToast();
+});
+
 </script>
 
 <template>
@@ -36,15 +55,6 @@ function done(todo) {
 
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div
-                    v-if="$page.props.flash.message"
-                    class="p-4 mb-4 text-sm text-green-600 bg-green-100 rounded-lg dark:bg-green-800"
-                    role="alert"
-                >
-                        <span class="font-medium">
-                            {{ $page.props.flash.message }}
-                        </span>
-                </div>
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">
                         <div class="mb-2">
@@ -76,12 +86,14 @@ function done(todo) {
                                     <th scope="row" class="px-6 py-4 font-medium text-gray-900">
                                         {{ todo.id }}
                                     </th>
-                                    <th scope="row" :class="{'line-through': todo.is_done}" class="px-6 py-4 font-medium text-gray-900">
+                                    <th scope="row" :class="{'line-through': todo.is_done}"
+                                        class="px-6 py-4 font-medium text-gray-900">
                                         {{ todo.content }}
                                     </th>
 
                                     <td class="px-6 py-4">
-                                        <input class="focus:ring-0" type="checkbox" id="checkbox" @click="done(todo)" v-model="todo.is_done">
+                                        <input class="focus:ring-0" type="checkbox" id="checkbox" @click="done(todo)"
+                                               v-model="todo.is_done">
                                     </td>
 
                                     <td class="px-6 py-4">
