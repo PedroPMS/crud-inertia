@@ -4,7 +4,7 @@ namespace App\Http\Requests\Todo;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRequest extends FormRequest
+class StoreRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,8 +14,8 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'content' => ['filled', 'string'],
-            'is_done' => ['filled', 'boolean'],
+            'content' => ['required', 'string'],
+            'is_done' => ['required', 'boolean'],
         ];
     }
 }

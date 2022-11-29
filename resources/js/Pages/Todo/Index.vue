@@ -2,9 +2,9 @@
 import {Head, Link, useForm} from '@inertiajs/inertia-vue3'
 import {Inertia} from "@inertiajs/inertia";
 import {useToast} from "vue-toastification";
-import {ref, watch, onMounted, computed} from 'vue'
+import {watch, onMounted} from 'vue'
 
-import BreezeButton from '@/Components/PrimaryButton.vue'
+import Button from '@/Components/PrimaryButton.vue'
 import Layout from "@/Layouts/Layout.vue";
 
 const props = defineProps({
@@ -16,10 +16,9 @@ const props = defineProps({
 
 function destroy(id) {
     const form = useForm();
-    form.delete(route('todos.destroy', id))
-    // if (confirm('Are you realy sure you want to DELETE')) {
-    //     form.delete(route('todos.destroy', id))
-    // }
+    if (confirm('Are you realy sure you want to DELETE')) {
+        form.delete(route('todos.destroy', id))
+    }
 }
 
 function done(todo) {
@@ -37,6 +36,10 @@ function showToast() {
     toast.success(message);
 }
 
+onMounted(() => {
+    showToast();
+});
+
 watch(() => props.todos, () => {
     showToast();
 });
@@ -47,21 +50,15 @@ watch(() => props.todos, () => {
     <Head title="Todos"/>
 
     <Layout>
-        <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800">
-                Todos
-            </h2>
-        </template>
-
         <div class="py-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div class="p-6 bg-white border-b border-gray-200">
                         <div class="mb-2">
                             <Link :href="route('todos.create')">
-                                <BreezeButton>
+                                <Button>
                                     Add Todo
-                                </BreezeButton>
+                                </Button>
                             </Link>
                         </div>
 
@@ -105,12 +102,12 @@ watch(() => props.todos, () => {
                                         </Link>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <BreezeButton
+                                        <Button
                                             class="bg-red-700"
                                             @click="destroy(todo.id)"
                                         >
                                             Delete
-                                        </BreezeButton>
+                                        </Button>
                                     </td>
                                 </tr>
                                 </tbody>
